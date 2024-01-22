@@ -27,7 +27,20 @@ const transporter = nodemailer.createTransport({
     secure: true, // upgrades later with STARTTLS -- change this based on the PORT
 });
 
-route.post('/email-code-verification', (req, res) => {
+route.post('/email-code-verification', async (req, res) => {
+    await new Promise((resolve, reject) => {
+        // verify connection configuration
+        transporter.verify(function (error, success) {
+            if (error) {
+                console.log(error);
+                reject(error);
+            } else {
+                console.log("Server is ready to take our messages");
+                resolve(success);
+            }
+        });
+    });
+
     console.log(EMAIL)
     const {to } = req.body;
     const subject = 'Codigo de Verificacion [Caracas-ToGo]'
@@ -367,16 +380,23 @@ route.post('/email-code-verification', (req, res) => {
         </html>`,
     };
 
-    transporter.sendMail(mailData, (error, info) => {
-        if (error) {
-            res.status(400).send({ error: error});
-        }else{
-            res.status(200).send({ message: "Mail send", message_id: info.messageId, code: code });
-        }
+    await new Promise((resolve, reject) => {
+        // send mail
+        transporter.sendMail(mailData, (err, info) => {
+            if (err) {
+                console.error(err);
+                reject(err);
+            } else {
+                console.log(info);
+                resolve(info);
+            }
+        });
     });
+
+    res.status(200).send({ message: "Mail send", message_id: info.messageId, code: code });
 });
 
 
 route.post('/message', (req, res) => {
-    res.status(200).send({ message: "Finolin 2"});
+    res.status(200).send({ message: "Finolin 3"});
 });
