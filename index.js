@@ -378,5 +378,5 @@ route.post('/email-code-verification', (req, res) => {
 
 
 route.post('/message', (req, res) => {
-    res.status(200).send({ message: "Finolin"});
+    res.status(200).send({ message: "Finolin 2"});
 });
